@@ -1,5 +1,5 @@
 {
-  "name": "yt-dlp-gui",
+  "name": "youtube_downloader",
   "author": "Muhammad Sayuti <muhammad.sayuti94@gmail.com>",
   "description": "A production ready, batteries included starter template for Vite + React projects",
   "keywords": [
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ekoputrapratama/yt-dlp-gui"
+    "url": "https://github.com/ekoputrapratama/youtube_downloader"
   },
   "license": "MIT",
   "version": "1.0.0",
