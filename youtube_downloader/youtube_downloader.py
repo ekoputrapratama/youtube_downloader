@@ -14,7 +14,6 @@ from velra.misc import earlyinit
 from velra.browser.Scheme import add_scheme_handler
 from velra.utils import standarddir, utils, resources
 from velra.config import config
-from youtube_downloader.YTDLPSchemeHandler import YTDLPSchemeHandler
 
 from youtube_downloader.YoutubeDownloaderWindow import YoutubeDownloaderWindow
 # from youtube_downloader.utils import getArgsParser
@@ -74,13 +73,24 @@ def main():
   sys.exit(app.exec())
 
 
+def resource_path(relative_path):
+  """ Get absolute path to resource, works for dev and for PyInstaller """
+  base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+  return os.path.join(base_path, relative_path)
+
+
 class YoutubeDownloaderApp(VApplication):
   def __init__(self, args):
-    plugin_dir = os.path.join(os.path.dirname(__file__), '..', "plugins")
+    if args.debug:
+      plugin_dir = os.path.join(os.path.dirname(__file__), '..', "plugins")
+    else:
+      plugin_dir = resource_path(os.path.join("..", "plugins"))
+
     self.registerUriScheme("ytdlp", os.path.dirname(__file__))
     self.registerUriScheme("plugins", plugin_dir)
 
     super().__init__(args, "ytdlp")
+    print(f"registering plugin directory {plugin_dir}")
     self.registerPluginDir(plugin_dir)
 
     self.window = YoutubeDownloaderWindow(self)
@@ -95,7 +105,7 @@ class YoutubeDownloaderApp(VApplication):
     self.window.show()
 
   @add_scheme_handler("ytdlp")
-  def handleYtdlpScheme(url: QUrl): # type: ignore
+  def handleYtdlpScheme(url: QUrl):  # type: ignore
     print("handling ytdlp scheme request with host={}".format(url.host()))
     host = url.host()
 
