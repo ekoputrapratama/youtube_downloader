@@ -24,4 +24,4 @@ Before running the app, ensure you have the following installed:
 
 ## Note
 
-please don't try to run this using the source code, this project use a private package that is not available in pypi, so you cannot run it without this private package. I'll try to make the installer and publish it in github release later when i have time.
+please don't try to run this using the source code, this project use a private package that is not available in pypi, so you cannot run it without this private package. download the portable exe file [here](https://github.com/ekoputrapratama/youtube_downloader/releases).
