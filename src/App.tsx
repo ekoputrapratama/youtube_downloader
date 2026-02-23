@@ -10,8 +10,8 @@ import type { GridColDef } from '@mui/x-data-grid';
 // eslint-disable-next-line no-duplicate-imports
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-// import styled from 'styled-components'
-
+import supportButton from "./assets/images/support_me_on_kofi_blue.webp";
+import logo from "./assets/images/youtube_downloader.png";
 
 const columns: Array<GridColDef> = [
   { field: 'id', headerName: 'ID', width: 70, align: 'center'},
@@ -21,7 +21,6 @@ const columns: Array<GridColDef> = [
   {
     field: 'status',
     headerName: 'Status',
-    // type: 'number',
     width: 150,
     valueGetter: (value, row) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -33,14 +32,6 @@ const columns: Array<GridColDef> = [
       return value;
     },
   },
-  // {
-  //   field: 'fullName',
-  //   headerName: 'Full name',
-  //   description: 'This column has a value getter and is not sortable.',
-  //   sortable: false,
-  //   width: 160,
-  //   valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
-  // },
 ];
 
 const paginationModel = { page: 0, pageSize: 5 };
@@ -78,7 +69,6 @@ function App() {
   }, [type])
 
   const handleAddToQueue = async () => {
-    console.log("handleAddToQueue", url)
     const title = await YTDLP.getTitle(url);
     setRows(previous => {
        
@@ -135,7 +125,7 @@ function App() {
   return (
     <div className="flex flex-col item-center justify-center p-5">
       <div className='logo-container flex justify-center'>
-        <img alt="Youtube Downloader" className='logo w-50' src="/youtube_downloader.png" />
+        <img alt="Youtube Downloader" className='logo w-50' src={logo} />
       </div>
       <h1 className="text-center text-2xl font-bold mt-10 mb-5">Youtube Downloader</h1>
       <FormControl fullWidth style={{marginBottom: 20}}>
@@ -182,6 +172,9 @@ function App() {
         <Button disabled={rows.length === 0} style={{marginLeft:10}} variant="contained" onClick={() => { setRows([]); }}>
           Clear Queue
         </Button>
+        <a href="https://ko-fi.com/ekoputrapratama" style={{maxWidth: 180}} target='_blank' onClick={() => YTDLP.openUrl("https://ko-fi.com/ekoputrapratama")}>
+          <img alt="Support me" src={supportButton} />
+        </a>
       </div>
       <Paper sx={{ height: 400, width: '100%' }}>
         <DataGrid

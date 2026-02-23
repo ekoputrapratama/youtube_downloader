@@ -15,18 +15,7 @@ export default defineConfig({
 		outDir: "app", // Change 'my-custom-folder' to your desired name
 		emptyOutDir: true, // Optional: Clears the output directory before a build
 	},
-	plugins: [
-		react(),
-		tailwindcss(),
-		viteStaticCopy({
-			targets: [
-				{
-					src: normalizePath(path.resolve("./src/assets/locales")),
-					dest: normalizePath(path.resolve("./app")),
-				},
-			],
-		}),
-	],
+	plugins: [react(), tailwindcss()],
 	server: {
 		host: true,
 		strictPort: true,
