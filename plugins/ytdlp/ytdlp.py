@@ -1,22 +1,20 @@
 import sys
-import subprocess
 import yt_dlp
-import os.path as path
 import requests
 import json
-import threading
-
 
 from bs4 import BeautifulSoup
-from velra.config.config import Configuration
 from velra.core.Bridge import BridgeObject, Bridge
-from velra.qt.core import Property, Signal, QObject, Slot, QThread
+from velra.qt.core import Signal, QObject, Slot, QThread
+from velra.qt.gui import QDesktopServices
+from velra.qt.webchannel import QWebChannel
+from velra.browser.webengine.WebView import VWebEnginePage
 from typing import Optional
 
 
 isLinux = sys.platform.startswith('linux')
 isWindows = sys.platform.startswith('win')
-ytdlp: Optional[YTDLP] = None
+ytdlp: Optional["YTDLP"] = None
 
 
 def get_site_title(url):
@@ -44,8 +42,9 @@ def get_site_title(url):
   except requests.exceptions.RequestException as e:
       return f"Error fetching the page: {e}"
 
+
 class YTDLPLogger:
-  def __init__(self, ytdlp: YTDLP):
+  def __init__(self, ytdlp: "YTDLP"):
     self.ytdlp = ytdlp
 
   def debug(self, msg):
@@ -60,9 +59,11 @@ class YTDLPLogger:
     # print(msg)
     pass
 
+
 class DownloadHandler(QThread):
-  _queue: Optional[DownloadQueue] = None
+  _queue: Optional["DownloadQueue"] = None
   _item: Optional[dict]
+
   def __init__(self, parent=None, queue=None, item=None):
     QThread.__init__(self, parent)
     self._queue = queue
@@ -70,34 +71,6 @@ class DownloadHandler(QThread):
   
   def run(self):
     self._queue._ydl.download([self._item["url"]])
-    
-class DownloadProgress(BridgeObject):
-  _id = 0
-  _status = "pending"
-  _url = ""
-  _percentage = 0
-  noop_signal = Bridge.signal()
-
-  def __init__(self, parent=None, item=None, percentage = 0, *args, **kwargs):
-    QObject.__init__(self, parent=parent)
-    self._id = item["id"]
-    self._url = item["url"]
-    self._percentage = percentage
-  
-  @Property(str, notify=noop_signal)
-  def url(self):
-    return self._url
-
-  @Property(str, notify=noop_signal)
-  def id(self):
-    return _id
-
-  def setStatus(self, status):
-    self._status = status
-
-  @Property(str, notify=noop_signal)
-  def status(self):
-    return self._status
 
 
 class DownloadQueue(BridgeObject):
@@ -125,18 +98,18 @@ class DownloadQueue(BridgeObject):
     else:
       format = f"{item['format']}/bestvideo/best"
       self._ydl = yt_dlp.YoutubeDL({
-        "noplaylist": item["noPlaylist"], 
+        "noplaylist": item["noPlaylist"],
         "format": format,
         # 'logger': self.logger,
         'progress_hooks': [self.progressHook],
       })
-    
+
     self._handler = DownloadHandler(queue=self, item=item)
 
   def progressHook(self, d):
-    # print(f"progressHook called {d}")
+
     if d['status'] == 'finished':
-      print(f'Done downloading, now post-processing... ')
+      print('Done downloading, now post-processing... ')
       item = dict(self._item)
       item["status"] = "Finished"
       progress = json.dumps(item)
@@ -152,19 +125,18 @@ class DownloadQueue(BridgeObject):
       item["percentage"] = percentage
       progress = json.dumps(item)
       self.onProgress.emit(progress)
-      # print("status downloading...")
-      
+      # print("status downloading...") 
 
   @Slot()
   def start(self):
     self._handler.start()
+
 
 class YTDLP(BridgeObject):
   noop_signal = Bridge.signal()
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-
 
   @Slot(str, result=DownloadQueue)
   def download(self, jsonStr: str):
@@ -178,7 +150,7 @@ class YTDLP(BridgeObject):
       # thread.start()
     except Exception as e:
       print(f"failed configuring yt-dlp {e}")
-   
+
     return None
 
   @Slot(str, result=str)
@@ -186,9 +158,14 @@ class YTDLP(BridgeObject):
     title = get_site_title(url)
     return title.replace("- YouTube", "")
 
+  @Slot(str, result=None)
+  def openUrl(self, url: str):
+    QDesktopServices.openUrl(url)
 
-def beforeLoad(channel: BridgeObject, page: QObject) -> None:
+
+def beforeLoad(channel: QWebChannel, page: VWebEnginePage) -> None:
   global ytdlp
+  assert ytdlp is not None
   channel.registerObject("YTDLP", ytdlp)
 
 
