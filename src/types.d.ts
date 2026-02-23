@@ -33,6 +33,7 @@ declare global {
 		download: (queueItem: string) => Promise<DownloadQueue>;
 
 		downloadAll: (queueItems: Array<string>) => Promise<any>;
+		openUrl: (url: string) => Promise<any>;
 	};
 
 	/**
