@@ -2,6 +2,10 @@
 
 A lightweight, intuitive graphical user interface for yt-dlp, built with PySide6. This application allows you to easily fetch content from YouTube and other supported platforms without touching the command line.
 
+### Support the project
+
+<a href='https://ko-fi.com/ekoputrapratama' target='_blank'><img src="https://storage.ko-fi.com/cdn/brandasset/v2/support_me_on_kofi_blue.png" width="155" height="35"/></a>&nbsp;&nbsp;
+
 ## 🚀 Features
 
 - Video Downloads: Save videos in high quality (MP4/MKV).
