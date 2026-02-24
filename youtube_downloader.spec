@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['D:\\Projects\\Python\\youtube-downloader\\public\\icon.ico'],
+    icon=['D:\\Projects\\Python\\youtube-downloader\\app\\icon.ico'],
 )
