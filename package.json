@@ -1,7 +1,7 @@
 {
   "name": "youtube_downloader",
   "author": "Muhammad Sayuti <muhammad.sayuti94@gmail.com>",
-  "description": "A production ready, batteries included starter template for Vite + React projects",
+  "description": "yt-dlp gui written in python and web tech",
   "keywords": [
     "vite",
     "react",
