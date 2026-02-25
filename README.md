@@ -26,6 +26,21 @@ Before running the app, ensure you have the following installed:
 
 3. yt-dlp: The engine powering the downloads.
 
+### Additional requirements for WSL
+
+- nvidia-libgl
+- Network Security Services / nss
+- libxcomposite
+- libxdamage
+- libxrandr
+- libxtst
+- libxkbfile
+- libtiff
+- libfbclient
+- postgresql-libs
+- mariadb-lts-libs
+- unixodbc
+
 ## Note
 
 please don't try to run this using the source code, this project use a private package that is not available in pypi, so you cannot run it without this private package. download the portable exe file [here](https://github.com/ekoputrapratama/youtube_downloader/releases).
