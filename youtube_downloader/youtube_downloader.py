@@ -44,6 +44,8 @@ def _unpack_json_args(args):
 def main():
   signal.signal(signal.SIGINT, sigint_handler)
   global app
+  # add this to fix error running in wsl
+  os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
   """
   This attribute need to be set before QCoreApplication created,
   it will still show warning because QWebEngineView::initialize
@@ -51,6 +53,7 @@ def main():
   """
   # MyApp.setAttribute(Qt.AA_ShareOpenGLContexts, True)
   parser = get_argparser()
+  parser.add_argument('--dev', help="Turn on development mode.", action='store_true')
   argv = sys.argv[1:]
   args = parser.parse_args(argv)
   if args.json_args is not None:
@@ -81,10 +84,13 @@ def resource_path(relative_path):
 
 class YoutubeDownloaderApp(VApplication):
   def __init__(self, args):
-    if args.debug:
+    if args.dev:
       plugin_dir = os.path.join(os.path.dirname(__file__), '..', "plugins")
     else:
-      plugin_dir = resource_path(os.path.join("..", "plugins"))
+      if utils.isLinux:
+        plugin_dir = resource_path(os.path.join("plugins"))
+      else:
+        plugin_dir = resource_path(os.path.join("..", "plugins"))
 
     self.registerUriScheme("ytdlp", os.path.dirname(__file__))
     self.registerUriScheme("plugins", plugin_dir)
@@ -97,7 +103,7 @@ class YoutubeDownloaderApp(VApplication):
     # self.window.webview.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
 
     print("load downloader url")
-    if args.debug:
+    if args.dev:
       self.window.loadUrl(args.url[0])
     else:
       self.window.loadUrl('ytdlp://app/index.html')
