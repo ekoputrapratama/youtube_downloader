@@ -33,5 +33,5 @@ storybook-static
 # tests
 /coverage/
 build/
-/__pycache__/
+__pycache__
 .lvenv/
