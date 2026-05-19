@@ -10,7 +10,7 @@ import type { GridColDef } from '@mui/x-data-grid';
 // eslint-disable-next-line no-duplicate-imports
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
-import supportButton from "./assets/images/support_me_on_kofi_blue.webp";
+import supportButton from "./assets/images/buy_me_a_coffee.png";
 import logo from "./assets/images/youtube_downloader.png";
 
 const columns: Array<GridColDef> = [
@@ -172,8 +172,8 @@ function App() {
         <Button disabled={rows.length === 0} style={{marginLeft:10}} variant="contained" onClick={() => { setRows([]); }}>
           Clear Queue
         </Button>
-        <a href="https://ko-fi.com/ekoputrapratama" style={{maxWidth: 180}} target='_blank' onClick={() => YTDLP.openUrl("https://ko-fi.com/ekoputrapratama")}>
-          <img alt="Support me" src={supportButton} />
+        <a href="https://www.buymeacoffee.com/ekoputraprm" target="_blank">
+          <img alt="Buy Me A Coffee" src={supportButton} style={{height: "41px !important", width: "174px !important", boxShadow: "0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important",WebkitBoxShadow: "0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important"}} />
         </a>
       </div>
       <Paper sx={{ height: 400, width: '100%' }}>
