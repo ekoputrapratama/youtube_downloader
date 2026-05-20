@@ -47,4 +47,4 @@ please don't try to run this using the source code, this project use a private p
 
 ## Known Issue
 
-- [ ] HMR not working because of plugin need to use custom scheme instead of http/https
+- [ ] HMR is working but sometimes it doesnt reload on first time connection to the websocket, so need to reload manually
