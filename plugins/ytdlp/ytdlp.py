@@ -11,10 +11,7 @@ from velra.qt.gui import QDesktopServices
 from velra.qt.webchannel import QWebChannel
 from velra.qt.widgets import QFileDialog
 from velra.browser.webengine.WebView import VWebEnginePage
-from typing import Optional, Any, Literal, get_args
-from typing_extensions import LiteralString
-from tempfile import mkdtemp
-from packaging.version import Version
+from typing import Optional, Any
 import ffmpeg_downloader as ffdl
 
 isLinux = sys.platform.startswith('linux')
@@ -23,11 +20,7 @@ ytdlp: Optional["YTDLP"] = None
 ytdlpLog = logging.getLogger("ytdlp")
 
 
-def compose_version_spec(version: Version | Literal["snapshot"], option: LiteralString | None = None):
-  return f"{version}@{option}" if option else str(version)
-
-
-def get_site_title(url):
+def getSiteTitle(url):
   """
   Fetches the title of a webpage from a given URL.
   """
@@ -226,7 +219,7 @@ class YTDLP(BridgeObject):
 
   @Slot(str, result=str)
   def getTitle(self, url: str):
-    title = get_site_title(url)
+    title = getSiteTitle(url)
     return title.replace("- YouTube", "")
 
   @Slot(str, result=None)
