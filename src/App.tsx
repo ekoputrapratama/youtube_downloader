@@ -1,5 +1,5 @@
  
-import {useEffect,  useState} from 'react';
+import {useEffect,  useState, useRef} from 'react';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
@@ -71,6 +71,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
 
+  const folderPickerRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
@@ -90,6 +92,10 @@ function App() {
       }
     }, 600);
     
+    if (folderPickerRef.current) {
+      folderPickerRef.current.setAttribute('directory', '');
+      folderPickerRef.current.setAttribute('webkitdirectory', '');
+    }
   }, []);
   
   useEffect(() => {
@@ -244,7 +250,7 @@ function App() {
           <div className='flex flex-col container'>
             <FormControl fullWidth style={{marginBottom: 20}}>
               <FormLabel style={{marginBottom:10}}>Download directory</FormLabel>
-              <input className="hidden" directory="" id="folder-picker" type="file" webkitdirectory=""  />
+              <input ref={folderPickerRef} className="hidden" id="folder-picker" type="file"  />
               <div className='flex flex-row items-center'>
                 <label className='grow border-b-neutral-500 border-2' style={{padding: "10px 20px"}}>{downloadDirectory}</label>
                 <button 
