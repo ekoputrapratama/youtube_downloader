@@ -1,6 +1,6 @@
 # YouTube Downloader (GUI)
 
-A lightweight, intuitive graphical user interface for yt-dlp, built with PySide6. This application allows you to easily fetch content from YouTube and other supported platforms without touching the command line.
+A portable, intuitive graphical user interface for yt-dlp, built with PySide6. This application allows you to easily fetch content from YouTube and other supported platforms without touching the command line.
 
 ### Support the project
 
