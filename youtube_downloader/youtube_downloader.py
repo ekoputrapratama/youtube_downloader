@@ -22,7 +22,7 @@ app: Optional[VApplication] = None
 
 
 def sigint_handler(*args):
-  global app
+  global app  # noqa
   """Handler for the SIGINT signal."""
   if app is not None:
     app.quit()
@@ -83,6 +83,7 @@ def resource_path(relative_path):
 
 
 class YoutubeDownloaderApp(VApplication):
+
   def __init__(self, args):
     if args.dev:
       plugin_dir = os.path.join(os.path.dirname(__file__), '..', "plugins")
@@ -96,13 +97,11 @@ class YoutubeDownloaderApp(VApplication):
     self.registerUriScheme("plugins", plugin_dir)
 
     super().__init__(args, "ytdlp")
-    print(f"registering plugin directory {plugin_dir}")
     self.registerPluginDir(plugin_dir)
 
     self.window = YoutubeDownloaderWindow(self)
     # self.window.webview.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
 
-    print("load downloader url")
     if args.dev:
       self.window.loadUrl(args.url[0])
     else:
@@ -112,7 +111,6 @@ class YoutubeDownloaderApp(VApplication):
 
   @add_scheme_handler("ytdlp")
   def handleYtdlpScheme(url: QUrl):  # type: ignore
-    print("handling ytdlp scheme request with host={}".format(url.host()))
     host = url.host()
 
     if host in ["app"]:
