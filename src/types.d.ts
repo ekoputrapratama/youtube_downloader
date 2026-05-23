@@ -14,11 +14,14 @@ declare global {
 		url: string;
 	}
 	type DownloadQueueCallback = (jsonString: string) => void;
+	type FfmpegDownloadCallback = (path: string) => void;
 	interface DownloadQueue {
 		onProgress: { connect: (callback: DownloadQueueCallback) => void };
 		start: () => Promise<any>;
 	}
-
+	interface FfmpegDownloader {
+		onFinished: { connect: (callback: FfmpegDownloadCallback) => void };
+	}
 	interface DownloadProgress {
 		id: number;
 		status: string;
@@ -30,10 +33,13 @@ declare global {
 	declare var YTDLP: {
 		getTitle: (url: string) => Promise<string>;
 
-		download: (queueItem: string) => Promise<DownloadQueue>;
+		download: (queueItem: string, options: string) => Promise<DownloadQueue>;
 
 		downloadAll: (queueItems: Array<string>) => Promise<any>;
 		openUrl: (url: string) => Promise<any>;
+		getDefaultDownloadDirectory: () => Promise<string>;
+		selectDirectory: () => Promise<string>;
+		initializeFfmpeg: () => Promise<FfmpegDownloader>;
 	};
 
 	/**

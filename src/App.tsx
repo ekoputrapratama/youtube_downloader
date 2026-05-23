@@ -2,16 +2,25 @@
 import {useEffect,  useState} from 'react';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import CircularProgress from '@mui/material/CircularProgress';
+ 
 import type { GridColDef } from '@mui/x-data-grid';
-// eslint-disable-next-line no-duplicate-imports
-import { DataGrid } from '@mui/x-data-grid';
+import {DataGrid} from '@mui/x-data-grid/DataGrid';
 import Paper from '@mui/material/Paper';
+import SettingsIcon from '@mui/icons-material/Settings';
 import supportButton from "./assets/images/buy_me_a_coffee.png";
 import logo from "./assets/images/youtube_downloader.png";
+import Divider from '@mui/material/Divider';
+
+import './global.module.css'
 
 const columns: Array<GridColDef> = [
   { field: 'id', headerName: 'ID', width: 70, align: 'center'},
@@ -49,12 +58,39 @@ interface RowItem {
 let queues: Array<any> = [];
 
 function App() {
+  const downloadPath = localStorage.getItem("download_directory");
   const [url, setUrl] = useState('');
+  const [openSettings, setOpenSettings] = useState(false);
   const [rows, setRows] = useState<Array<RowItem>>([]);
   const [type, setType] = useState<FileType>('audio');
   const [format, setFormat] = useState('mp3');
   const [formatItems, setFormatItems] = useState<Array<string>>([]);
-  
+  const [downloadDirectory, setDownloadDirectory] = useState(downloadPath);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [ffmpegPath, setFfmpegPath] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setTimeout(async () => {
+      setLoadingMessage("Initializing ffmpeg...")
+      setLoading(true);
+      const handler = await YTDLP.initializeFfmpeg();
+      handler.onFinished.connect((path) => {
+        console.log(`ffmpeg path ${path}`)
+        setFfmpegPath(path);
+        setLoading(false);
+      })
+
+      if(!downloadPath){
+        YTDLP.getDefaultDownloadDirectory().then((directory) => {
+          setDownloadDirectory(directory);
+        });
+      }
+    }, 600);
+    
+  }, []);
   
   useEffect(() => {
     if(type==='video'){
@@ -87,12 +123,15 @@ function App() {
     });
     setUrl('');
   }
+
+  const handleClearQueue = () => {
+    setRows([]);
+  }
+
   const handleUpdateProgress = (jsonString: string) => {
     const progress = JSON.parse(jsonString) as RowItem;
     
-    console.log("handleUpdateProgress", progress)
     if(progress.status === "Finished") {
-      console.log("queues", queues);
       setRows(previous => previous.filter(row => row.id !== progress.id));
     } else {
       setRows(previous => previous.map(row => {
@@ -106,24 +145,29 @@ function App() {
     
   }
   const handleDownload = async () => {
-    console.log("handleDownload")
-    // const downloads = [];
-    
+    setIsDownloading(true);
     for(const row of rows){
       // eslint-disable-next-line no-await-in-loop
-      const queue = await YTDLP.download(JSON.stringify({...row, noPlaylist: true}))
+      const queue = await YTDLP.download(JSON.stringify({...row, noPlaylist: true, downloadDirectory}), JSON.stringify({"ffmpeg_location": ffmpegPath}))
        
       queue.onProgress.connect(handleUpdateProgress);
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      queue.start();
       queues.push(queue.start());
     }
-    // const queue = await YTDLP.download(JSON.stringify({url, type, format, noPlaylist: true})).catch(console.error)
-    console.log("queues", queues);
+    Promise.all(queues).then(() => {
+      setIsDownloading(false);
+    });
   }
+
+  const handleSettingsClose = () => {
+    setOpenSettings(false);
+  }
+
 
   return (
     <div className="flex flex-col item-center justify-center p-5">
+      <div className="fixed right-0 top-0 mr-5 mt-5">
+        <SettingsIcon onClick={() => { setOpenSettings(true); }}/>
+      </div>
       <div className='logo-container flex justify-center'>
         <img alt="Youtube Downloader" className='logo w-50' src={logo} />
       </div>
@@ -163,16 +207,16 @@ function App() {
         </Select>
       </FormControl>
       <div className="flex flex-row">
-        <Button variant="contained" onClick={handleAddToQueue}>
+        <Button disabled={isDownloading} variant="contained" onClick={handleAddToQueue}>
           Add to Queue
         </Button>
         <Button disabled={rows.length === 0} style={{marginLeft:10}} variant="contained" onClick={handleDownload}>
           Download
         </Button>
-        <Button disabled={rows.length === 0} style={{marginLeft:10}} variant="contained" onClick={() => { setRows([]); }}>
+        <Button disabled={rows.length === 0 || isDownloading} style={{marginLeft:10}} variant="contained" onClick={handleClearQueue}>
           Clear Queue
         </Button>
-        <a href="https://www.buymeacoffee.com/ekoputraprm" target="_blank">
+        <a href="https://www.buymeacoffee.com/ekoputraprm" style={{marginLeft:10}} target="_blank">
           <img alt="Buy Me A Coffee" src={supportButton} style={{height: "41px !important", width: "174px !important", boxShadow: "0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important",WebkitBoxShadow: "0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important"}} />
         </a>
       </div>
@@ -185,6 +229,45 @@ function App() {
           sx={{ border: 0 }}
         />
       </Paper>
+      <Dialog open={loading}>
+        <DialogContent>
+          <div className='flex flex-col justify-center items-center'>
+            <CircularProgress enableTrackSlot size={40} />
+            <span className='mt-5'>{loadingMessage}</span>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog fullWidth open={openSettings} onClose={handleSettingsClose}>
+        <DialogTitle>Settings</DialogTitle>
+        <Divider />
+        <DialogContent>
+          <div className='flex flex-col container'>
+            <FormControl fullWidth style={{marginBottom: 20}}>
+              <FormLabel style={{marginBottom:10}}>Download directory</FormLabel>
+              <input className="hidden" directory="" id="folder-picker" type="file" webkitdirectory=""  />
+              <div className='flex flex-row items-center'>
+                <label className='grow border-b-neutral-500 border-2' style={{padding: "10px 20px"}}>{downloadDirectory}</label>
+                <button 
+                  className='shrink' 
+                  style={{padding: "10px 10px", backgroundColor: "rgb(25, 118, 210)", color: "white", border: "none", cursor: "pointer"}}
+                  // eslint-disable-next-line unicorn/prevent-abbreviations
+                  onClick={(e) => {
+                     
+                    YTDLP.selectDirectory().then((directory) => {
+                      if(directory){
+                        setDownloadDirectory(directory);
+                        localStorage.setItem("download_path", directory);
+                      }
+                    });
+                    e.stopPropagation();
+                  }}>Select Folder</button>
+              </div>
+              
+            </FormControl>
+          </div>
+        </DialogContent>
+        
+      </Dialog>
     </div>
   )
 }
