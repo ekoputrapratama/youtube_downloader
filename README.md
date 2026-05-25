@@ -20,15 +20,9 @@ Before running the app, ensure you have the following installed:
 
 1. Python 3.8+
 
-2. FFmpeg: Required for merging video/audio and converting to MP3.
-   - Linux: sudo apt install ffmpeg
-   - macOS: brew install ffmpeg
-
-3. yt-dlp: The engine powering the downloads.
-
 ### Additional requirements for WSL
 
-- nvidia-libgl
+- nvidia-libgl/amd/intel
 - Network Security Services / nss
 - libxcomposite
 - libxdamage
@@ -47,5 +41,5 @@ please don't try to run this using the source code, this project use a private p
 
 ## Known Issue
 
-- [ ] HMR is working but sometimes it doesnt reload on first time connection to the websocket, so need to reload manually
+- [x] HMR is working but sometimes it doesnt reload on first time connection to the websocket, so need to reload manually
 - [ ] plugin cannot use relative import
