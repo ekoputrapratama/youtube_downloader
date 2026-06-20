@@ -23,7 +23,13 @@ class FfmpegDownloadHandler(QThread):
     log.debug(f"latest version {latestBuild}")
 
     if not ffdl.installed() or shouldUpgrade:
-      dstpaths = ffdl._backend.download(latestBuild, dst=cacheDir, no_cache_dir=True, proxy=None, retries=None, timeout=None, progress=None)
+      dstpaths = ffdl._backend.download(latestBuild,
+                                        dst=cacheDir,
+                                        no_cache_dir=False,
+                                        proxy=None,
+                                        retries=None,
+                                        timeout=None,
+                                        progress=None)
       log.debug(f"destination path {dstpaths}")
       ffdl._backend.install(*dstpaths, progress=None)
 
@@ -31,7 +37,7 @@ class FfmpegDownloadHandler(QThread):
     # if self._downloader is not None:
     assert self._downloader is not None
     # sometimes this code emit the event too fast, so the javascript event is not fired in the client
-    self.sleep(1)
+    # self.sleep(1)
     self._downloader.onFinished.emit(ffdl.ffmpeg_path)
 
 
