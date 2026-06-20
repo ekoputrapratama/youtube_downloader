@@ -44,7 +44,6 @@ class YTDLP(BridgeObject):
   @Slot(result=FfmpegDownloader)
   def initializeFfmpeg(self):
     handler = FfmpegDownloader(parent=self)
-    handler.start()
     return handler
 
   @Slot(str, str, result=DownloadQueue)
