@@ -21,6 +21,7 @@ declare global {
 	}
 	interface FfmpegDownloader {
 		onFinished: { connect: (callback: FfmpegDownloadCallback) => void };
+		start: () => any;
 	}
 	interface DownloadProgress {
 		id: number;
