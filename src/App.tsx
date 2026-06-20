@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
  
 import {useEffect,  useState, useRef} from 'react';
 import TextField from '@mui/material/TextField';
@@ -73,24 +74,26 @@ function App() {
 
   const folderPickerRef = useRef<HTMLInputElement>(null);
 
+   
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     setTimeout(async () => {
       setLoadingMessage("Initializing ffmpeg...")
       setLoading(true);
       const handler = await YTDLP.initializeFfmpeg();
       handler.onFinished.connect((path) => {
-        console.log(`ffmpeg path ${path}`)
         setFfmpegPath(path);
         setLoading(false);
-      })
-
+      });
+      handler.start();
+    }, 0);
+    
+    setTimeout(() => {
       if(!downloadPath){
         YTDLP.getDefaultDownloadDirectory().then((directory) => {
           setDownloadDirectory(directory);
         });
       }
-    }, 600);
+    }, 500);
     
     if (folderPickerRef.current) {
       folderPickerRef.current.setAttribute('directory', '');
@@ -100,7 +103,6 @@ function App() {
   
   useEffect(() => {
     if(type==='video'){
-       
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormatItems(['mp4', 'webm']);
       setFormat('mp4');
